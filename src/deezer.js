@@ -74,14 +74,15 @@ class DeezerConnection {
             license_token: json.results.USER.OPTIONS.license_token
         };
         this.credentials = credentials
+        console.log(credentials);
         return this;
     }
 
-    async playlist(url) {
+    async playlist(token) {
         return await new Promise((resolve, reject) => {
             let req = https.request({
                 hostname: 'deezer.page.link',
-                path: url.slice(24),
+                path: '/' + token,
                 method: 'GET'
             }, (res) => {
                 if(res.headers.hasOwnProperty('location')) {
@@ -102,16 +103,41 @@ class DeezerConnection {
                 body: {"nb":2000,"start":0,"playlist_id":id,"lang":"us","tab":0,"tags":true,"header":true}
             }))
             .then(res => {
+                let tracks = [];
+                let d = res.results.SONGS.data;
+                for (let i = 0; i < d.length; i++) {
+                    const song = d[i];
+                    var artists = [];
+                    try {
+                        for (let j = 0; j < song.ARTISTS.length; j++) {
+                            artists.push(song.ARTISTS[j].ART_NAME)
+                        }
+                    } catch {
+                        artists = [song.ART_NAME];
+                    }
+                    let piclink = '';
+                    try {
+                        piclink = `https://e-cdns-images.dzcdn.net/images/cover/${song.ALB_PICTURE}/64x64-000000-80-0-0.jpg`
+                    } catch (error) {
+                        piclink = ''
+                    }
+                    tracks.push({
+                        title: song.SNG_TITLE,
+                        artists: artists,
+                        picture: piclink
+                    });
+                    
+                }
                 return {
                     title: res.results.DATA.TITLE,
                     picture: `https://e-cdns-images.dzcdn.net/images/cover/${res.results.DATA.PLAYLIST_PICTURE}/264x264-000000-80-0-0.jpg`,
                     owner: res.results.DATA.PARENT_USERNAME,
                     size: res.results.DATA.NB_SONG,
-                    duration: res.results.DATA.DURATION
+                    duration: res.results.DATA.DURATION,
+                    tracks: tracks
                 }
-            })
+            }).catch(err => console.error(err));
     }
 }
 
-let d = new DeezerConnection();
-d.auth().then(d => d.playlist('https://deezer.page.link/kstk67fbZzfAPXhcA').then(t => console.log(t)))
+module.exports = DeezerConnection;

@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>song mixxer</title>
+    <title>crossmixxer</title>
     <style>
         @media screen and not (max-width: 600px) {
             #action {
                 font-size: 40px;
             }
 
-            #arrow-main, #arrow-l1, #arrow-l2 {
+            #arrow-main,
+            #arrow-l1,
+            #arrow-l2 {
                 stroke-width: 2;
             }
 
@@ -23,6 +26,7 @@
                 justify-content: end;
                 padding-right: 110px;
             }
+
             #main-right {
                 justify-content: start;
                 padding-left: 110px;
@@ -37,6 +41,10 @@
                 width: 270px;
                 height: 270px;
             }
+
+            #modal-playlist {
+                flex-direction: row;
+            }
         }
 
         @media screen and (max-width: 600px) {
@@ -44,7 +52,9 @@
                 font-size: 30px;
             }
 
-            #arrow-main, #arrow-l1, #arrow-l2 {
+            #arrow-main,
+            #arrow-l1,
+            #arrow-l2 {
                 stroke-width: 3;
             }
 
@@ -56,7 +66,8 @@
                 width: 100%;
             }
 
-            #main-left, #main-right {
+            #main-left,
+            #main-right {
                 justify-content: center;
             }
 
@@ -68,6 +79,15 @@
             #arrow-container {
                 width: 135px;
                 height: 135px;
+            }
+
+            #modal-playlist {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            #modal-playlist {
+                flex-direction: column;
             }
         }
 
@@ -93,7 +113,8 @@
             margin: 20px 0;
         }
 
-        #main-left, #main-right {
+        #main-left,
+        #main-right {
             width: 100%;
             flex: 1;
             display: flex;
@@ -150,8 +171,7 @@
             color: #fff;
             cursor: pointer;
             clip-path: polygon(var(--slant-2) 0, calc(100% - var(--slant)) 0, 100% var(--slant),
-                    calc(100% - var(--slant-2)) 100%, var(--slant) 100%,0 calc(100% - var(--slant))
-                );
+                    calc(100% - var(--slant-2)) 100%, var(--slant) 100%, 0 calc(100% - var(--slant)));
             filter: brightness(150%);
         }
 
@@ -160,8 +180,15 @@
         }
 
         @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: #dc143c; }
+
+            from,
+            to {
+                border-color: transparent
+            }
+
+            50% {
+                border-color: #dc143c;
+            }
         }
 
         .card {
@@ -172,7 +199,104 @@
             grid-template-columns: 1fr;
             grid-template-rows: 160px 20px 20px 20px;
             border-radius: 5px;
+            transition: filter .5s;
+            position: relative;
+            text-align: center;
+        }
+
+        .card:not(.modal) {
             cursor: pointer;
+        }
+
+        .card.error {
+            animation: shake .8s ease-in 1;
+        }
+
+        .card.loading {
+            cursor: default;
+        }
+
+        .card.loading::before {
+            content: ' ';
+            position: absolute;
+            z-index: 1;
+            background-color: #00000088;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border-radius: 5px;
+        }
+
+        .card.loading::after {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            content: '♪';
+            animation: load 1s ease infinite;
+            z-index: 2;
+            color: #fff;
+            font-size: 40px;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            10% {
+                transform: translateX(-20px);
+            }
+
+            20% {
+                transform: translateX(20px);
+            }
+
+            30% {
+                transform: translateX(-15px);
+            }
+
+            40% {
+                transform: translateX(12px);
+            }
+
+            50% {
+                transform: translateX(-10px);
+            }
+
+            60% {
+                transform: translateX(8px);
+            }
+
+            70% {
+                transform: translateX(-6px);
+            }
+
+            80% {
+                transform: translateX(4px);
+            }
+
+            90% {
+                transform: translateX(-2px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes load {
+            0% {
+                left: 30px;
+            }
+
+            50% {
+                left: calc(100% - 54px);
+            }
+
+            100% {
+                left: 30px;
+            }
         }
 
         .card.deezer {
@@ -180,7 +304,8 @@
             box-shadow: #ab76b9 -5px 5px;
             transition: all .2s;
         }
-        .card.deezer:hover {
+
+        .card:not(.modal).deezer:hover {
             box-shadow: #ab76b9 -10px 10px;
         }
 
@@ -189,7 +314,8 @@
             box-shadow: #30a46e -5px 5px;
             transition: all .2s;
         }
-        .card.spotify:hover {
+
+        .card:not(.modal).spotify:hover {
             box-shadow: #30a46e -10px 10px;
         }
 
@@ -197,7 +323,7 @@
             position: relative;
         }
 
-        .card-img > img {
+        .card-img>img {
             border-radius: 5px 5px 0 0;
             filter: brightness(50%);
         }
@@ -221,6 +347,7 @@
         .deezer .card-link {
             background-color: #E8D4ED;
         }
+
         .deezer .card-link:focus {
             outline: #723681 solid 2px;
         }
@@ -243,6 +370,7 @@
             font-weight: 600;
             font-size: 23px;
             text-align: left;
+            word-break: break-word;
         }
 
         .card-img-sec {
@@ -256,7 +384,7 @@
             margin: 0;
         }
 
-        .card-img-sec > img {
+        .card-img-sec>img {
             width: 30px;
             height: 30px;
         }
@@ -270,7 +398,7 @@
         }
 
         .infos {
-            font-size: 13px;
+            font-size: 12px;
         }
 
         #modal-container {
@@ -295,6 +423,82 @@
             max-height: calc(100vh - 80px);
         }
 
+        #modal-playlist {
+            width: 640px;
+            height: 260px;
+            max-width: calc(100vw - 160px);
+            display: flex;
+            padding: 20px;
+            margin: 20px;
+        }
+
+        #playlist-card {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #playlist-tracks {
+            flex: 1;
+            min-width: 0;
+            margin-left: 20px;
+            padding-right: 10px;
+            overflow: auto;
+        }
+
+        .playlist-title {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .playlist-title:last-of-type {
+            margin-top: 10px;
+        }
+
+        .line {
+            width: 100%;
+            border-bottom: 1px solid #7a7a7a;
+            margin-left: 20px;
+        }
+
+        .track {
+            height: 40px;
+            display: grid;
+            grid-template-columns: 40px 1fr;
+            overflow: hidden;
+            background: #E8D4ED;
+            border-radius: 5px;
+            position: relative;
+            margin: 5px 0;
+        }
+
+        .track-picture {
+            width: 40px;
+            height: 40px;
+        }
+
+        .track-text {
+            margin-left: 20px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .text-border {
+            position: absolute;
+            right: 0;
+            width: 40px;
+            height: 100%;
+            background: linear-gradient(90deg, #E8D4ED00, #E8D4EDFF 30px, #E8D4EDFF);
+        }
+
+        .text-title {
+            font-weight: 600;
+        }
+
         #close-modal {
             width: 27px;
             height: 27px;
@@ -307,9 +511,11 @@
             text-align: center;
             cursor: pointer;
         }
+
         #close-modal:hover {
             background-color: #ACECCE;
         }
+
         #close-modal::after {
             content: '×';
             font-size: 20px;
@@ -320,14 +526,31 @@
         }
 
         @keyframes popout {
-            from{transform:scale(0)}
-            80%{transform:scale(1.05)}
-            to{transform:scale(1)}
+            from {
+                transform: scale(0)
+            }
+
+            80% {
+                transform: scale(1.05)
+            }
+
+            to {
+                transform: scale(1)
+            }
         }
+
         @keyframes popout-bis {
-            from{transform:scale(1)}
-            20%{transform:scale(1.05)}
-            to{transform:scale(0)}
+            from {
+                transform: scale(1)
+            }
+
+            20% {
+                transform: scale(1.05)
+            }
+
+            to {
+                transform: scale(0)
+            }
         }
 
         body[modal="off"] #modal {
@@ -337,14 +560,13 @@
         body[modal="on"] #modal {
             animation: popout .2s ease-out forwards;
         }
-
-        
     </style>
     <style>
         @keyframes arrowdot0 {
             from {
                 d: path("M50,50a0,0,0 0 1,0,0");
             }
+
             to {
                 d: path("M83,50a0,0,0 0 1,0,0");
             }
@@ -354,6 +576,7 @@
             from {
                 d: path("M83,50a0,0,0 0 1,0,0");
             }
+
             to {
                 d: path("M17,50a0,0,0 0 1,0,0");
             }
@@ -363,6 +586,7 @@
             from {
                 d: path("M17,50a0,0,0 0 1,0,0");
             }
+
             to {
                 d: path("M50,50a0,0,0 0 1,0,0");
             }
@@ -384,6 +608,7 @@
             from {
                 d: path("M80,47L70,37");
             }
+
             to {
                 d: path("M80,47L70,37");
             }
@@ -393,6 +618,7 @@
             from {
                 d: path("M80,47L70,37");
             }
+
             to {
                 d: path("M30,37L20,47");
             }
@@ -402,6 +628,7 @@
             from {
                 d: path("M30,37L20,47");
             }
+
             to {
                 d: path("M80,47L70,37");
             }
@@ -423,6 +650,7 @@
             from {
                 d: path("M20,53L30,63");
             }
+
             to {
                 d: path("M70,63L80,53");
             }
@@ -432,6 +660,7 @@
             from {
                 d: path("M70,63L80,53");
             }
+
             to {
                 d: path("M20,53L30,63");
             }
@@ -441,6 +670,7 @@
             from {
                 d: path("M20,53L30,63");
             }
+
             to {
                 d: path("M20,53L30,63");
             }
@@ -462,6 +692,7 @@
             transition: all .2s;
             stroke-width: 20;
         }
+
         #arrow:hover #arrow-circle {
             stroke-width: 30;
         }
@@ -470,11 +701,13 @@
             fill: #ffffff88;
             transition: all .2s;
         }
+
         #arrow-container:hover #arrow-circle-bg {
             fill: #ffffff;
         }
     </style>
 </head>
+
 <body modal="off">
     <div id="app">
         <div id="action-container">
@@ -482,24 +715,26 @@
         </div>
         <div id="main">
             <div id="main-left">
-                <div class="card deezer">
+                <div class="card deezer" id="dz-card">
                     <div class="card-img">
-                        <img src="https://picsum.photos/160?random=0" class="card-img-main" onerror="this.style.display='none'">
-                        <div class="title">Type Deezer playlist link below</div>
+                        <img src="https://picsum.photos/160?random=0" class="card-img-main"
+                            onerror="this.style.display='none'" id="dz-picture">
+                        <div class="title" id="dz-title">Type Deezer playlist link below</div>
                     </div>
                     <div class="origin">
-                        <span>
+                        <span id="dz-origin">
                             ♫
                         </span>
                     </div>
-                    <div class="infos">0 tracks • 00:00:00</div>
-                    <input type="text" name="link1" id="link1" class="card-link" placeholder="Deezer's link">
+                    <div class="infos" id="dz-infos">0 tracks • 00:00:00</div>
+                    <input type="text" name="dz-link" id="dz-link" class="card-link" placeholder="Deezer's link">
                 </div>
             </div>
             <div id="main-right">
-                <div class="card spotify">
+                <div class="card spotify" id="sp-card">
                     <div class="card-img">
-                        <img src="https://picsum.photos/160?random=1" class="card-img-main" onerror="this.style.display='none'">
+                        <img src="https://picsum.photos/160?random=1" class="card-img-main"
+                            onerror="this.style.display='none'">
                         <div class="title">Type Spotify playlist link below</div>
                     </div>
                     <div class="origin">
@@ -508,17 +743,19 @@
                         </span>
                     </div>
                     <div class="infos">0 tracks • 00:00:00</div>
-                    <input type="text" name="link2" id="link2" class="card-link" placeholder="Spotify's link">
+                    <input type="text" name="sp-link" id="sp-link" class="card-link" placeholder="Spotify's link">
                 </div>
             </div>
             <div id="arrow-container">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" id="arrow" preserveAspectRatio="xMidYMid meet">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" id="arrow"
+                    preserveAspectRatio="xMidYMid meet">
                     <circle cx="50" cy="50" r="45" id="arrow-circle-bg" />
                     <path d="M50,50a0,0,0 0 1,0,0" style="stroke:#dc143c00" stroke-linecap="round" id="arrow-circle" />
                     <path d="M20,47L80,47M20,53L80,53" style="stroke:#000;" stroke-linecap="round" id="arrow-main" />
                     <path d="M80,47L70,37" style="stroke:#000;" stroke-linecap="round" id="arrow-l1" />
                     <path d="M20,53L30,63" style="stroke:#000;" stroke-linecap="round" id="arrow-l2" />
-                    <path d="M50,50a0,0,0 0 1,0,0" style="stroke:#000;stroke-width:2;" stroke-linecap="round" id="arrow-dot" />
+                    <path d="M50,50a0,0,0 0 1,0,0" style="stroke:#000;stroke-width:2;" stroke-linecap="round"
+                        id="arrow-dot" />
                 </svg>
             </div>
         </div>
@@ -530,13 +767,42 @@
         <div id="modal">
             <div id="modal-playlist">
                 <div id="playlist-card">
-                    
+                    <div class="card modal deezer" id="md-card">
+                        <div class="card-img">
+                            <img class="card-img-main" src="https://picsum.photos/160?random=0"
+                                onerror="this.style.display='none'" id="md-picture">
+                            <div class="title" id="md-title">oopsie</div>
+                        </div>
+                        <div class="origin">
+                            <span id="md-origin">
+                                ♫
+                            </span>
+                        </div>
+                        <div class="infos" id="md-infos">0 tracks • 00:00:00</div>
+                        <input type="text" name="md-link" id="md-link" class="card-link" disabled>
+                    </div>
                 </div>
-                <div id="playlist-songs">
-
+                <div id="playlist-tracks">
+                    <div id="added-track-container" style="display:none;">
+                        <div class="playlist-title">Added tracks <span class="line"></span></div>
+                        <div class="playlist-tracks-group">
+                            <div class="track">
+                                <img src="https://picsum.photos/40" class="track-picture">
+                                <div class="track-text">
+                                    <span class="text-title">Where Is My Mind</span><span>&nbsp;-&nbsp;</span><span>The
+                                        Pixies</span>
+                                </div>
+                                <span class="text-border"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="playlist-title">Current tracks <span class="line"></span></div>
+                        <div class="playlist-tracks-group" id="current-tracks"></div>
+                    </div>
                 </div>
             </div>
-            <div id="close-modal" onclick="togglemodal()"></div>
+            <div id="close-modal" onclick="togglemodal();"></div>
         </div>
     </div>
     <script>
@@ -546,7 +812,7 @@
             var isRunning = 0;
             var phrase = new Phrase();
             arrow.onclick = () => {
-                if(isRunning == 0) {
+                if (isRunning == 0) {
                     isRunning = 1;
                     state += 1;
                     state %= 3;
@@ -565,9 +831,16 @@
                 }
             }
             modalcontainer.style.display = 'none';
+
+            dzcard = new Card('deezer');
+            spcard = new Card('spotify');
+
+            togglemodal();
         });
 
         const WRITING_SPEED = 40;
+
+        var spcard, dzcard;
 
         class Phrase {
             constructor() {
@@ -585,7 +858,7 @@
 
             write(_this) {
                 var p = _this.phrases[_this.state];
-                if(_this.index < p.length) {
+                if (_this.index < p.length) {
                     _this.t.push(p[_this.index]);
                     _this.index += 1
                     document.getElementById('action').innerText = _this.t.join('');
@@ -597,7 +870,7 @@
             erase(_this) {
                 _this.t.pop();
                 document.getElementById('action').innerText = _this.t.join('');
-                if(_this.t.length == 0) {
+                if (_this.t.length == 0) {
                     clearInterval(_this.interval);
                     _this.index = 0;
                     _this.interval = setInterval(() => { _this.write(_this) }, WRITING_SPEED);
@@ -614,33 +887,163 @@
             }
         }
 
-        class Music {
-            constructor(title, artists, album, duration, thumbnail) {
-                this.title = title;
-                this.artists = artists;
-                this.album = album;
-                this.duration = duration;
-                this.thumbnail = thumbnail;
-            }
-            getDurationAsString() {
-                return '00:00'
-            }
-        }
-
-        class Playlist {
-            constructor() {
-                this.musics = {
-                    natives: [],
-                    added: [],
-                    errors: [],
+        class Card {
+            constructor(type) {
+                this.type = type;
+                this.name = type.charAt(0).toUpperCase() + type.slice(1);
+                if (this.type == 'deezer') {
+                    this.prefix = 'dz'
                 }
+                if (type == 'spotify') {
+                    this.prefix = 'sp'
+                }
+                this.infos = document.getElementById(this.prefix + '-infos');
+                this.link = document.getElementById(this.prefix + '-link');
+                this.origin = document.getElementById(this.prefix + '-origin');
+                this.title = document.getElementById(this.prefix + '-title');
+                this.picture = document.getElementById(this.prefix + '-picture');
+                this.card = document.getElementById(this.prefix + '-card');
+
+                this.imgsrc = "";
+
+                this.linkvalue = '';
+
+                this.islodaded = false;
+
+                this.tracks = [];
+
+                this.card.onclick = (e) => {
+                    this.clickfn(e);
+                }
+
+                this.link.onkeydown = (e) => {
+                    if (e.key == 'Enter') {
+                        this.linkfn();
+                    }
+                }
+
+                this.link.onblur = (_) => {
+                    this.linkfn();
+                };
+            }
+
+            linkfn() {
+                if (this.link.value == '') return;
+                const regex = /^https:\/\/deezer\.page\.link\/[a-zA-Z0-9]+$/;
+                if (regex.test(this.link.value)) {
+                    if (this.linkvalue == this.link.value) return;
+                    this.linkvalue = this.link.value;
+                    this.card.classList.add('loading');
+                    fetch(`/${this.prefix}/playlist/${this.link.value.slice(25)}`)
+                        .then(txt => txt.json())
+                        .then(res => {
+                            if (res.status == 1) {
+                                var data = res.data;
+                                this.islodaded = true;
+                                this.title.innerText = data.title;
+                                this.picture.src = data.picture;
+                                this.origin.innerText = `by ${data.owner} on ${this.name}`;
+                                this.infos.innerText = `${data.size} tracks • ${formatduration(data.duration)}`;
+                                this.card.classList.remove('loading');
+                                this.imgsrc = data.picture;
+                                this.tracks = data.tracks;
+                            } else {
+                                this.card.classList.remove('loading');
+                                this.islodaded = false;
+                                this.error();
+                            }
+                        })
+                } else {
+                    this.islodaded = false;
+                    this.error();
+                }
+            }
+
+            clickfn(e) {
+                if (this.islodaded) {
+                    if (e.target != this.link) {
+                        this.modalize();
+                        togglemodal();
+                    }
+                } else {
+                    this.link.focus();
+                }
+            }
+
+            modalize() {
+                document.getElementById('md-picture').src = this.imgsrc;
+                document.getElementById('md-title').innerText = this.title.innerText;
+                document.getElementById('md-origin').innerText = this.origin.innerText;
+                document.getElementById('md-infos').innerText = this.infos.innerText;
+                document.getElementById('md-link').value = this.link.value;
+                document.getElementById('current-tracks').innerHTML = '';
+                for(let i = 0; i < this.tracks.length; i++) {
+                    this.createTrackElement(document.getElementById('current-tracks'), this.tracks[i]);
+                }
+                if (this.type == 'spotify') {
+                    document.getElementById('md-card').classList.remove('deezer');
+                    document.getElementById('md-card').classList.add('spotify');
+                } else {
+                    document.getElementById('md-card').classList.remove('spotify');
+                    document.getElementById('md-card').classList.add('deezer');
+                }
+            }
+
+            createTrackElement(parentElement, track) {
+                // Crée le conteneur principal <div class="track">
+                const trackDiv = document.createElement("div");
+                trackDiv.className = "track";
+
+                // Crée l'image <img src="https://picsum.photos/40" class="track-picture">
+                const img = document.createElement("img");
+                img.src = track.picture;
+                img.className = "track-picture";
+
+                // Crée le conteneur de texte <div class="track-text">
+                const textDiv = document.createElement("div");
+                textDiv.className = "track-text";
+
+                // Crée les éléments de texte <span>
+                const titleSpan = document.createElement("span");
+                titleSpan.className = "text-title";
+                titleSpan.textContent = track.title;
+
+                const separatorSpan1 = document.createElement("span");
+                separatorSpan1.innerHTML = "&nbsp;-&nbsp;";
+
+                const artistSpan = document.createElement("span");
+                artistSpan.textContent = track.artists.join(', ');
+
+                // Crée le séparateur <span class="text-border"></span>
+                const borderSpan = document.createElement("span");
+                borderSpan.className = "text-border";
+
+                // Ajoute les éléments au conteneur de texte
+                textDiv.appendChild(titleSpan);
+                textDiv.appendChild(separatorSpan1);
+                textDiv.appendChild(artistSpan);
+
+                // Ajoute tous les éléments au conteneur principal
+                trackDiv.appendChild(img);
+                trackDiv.appendChild(textDiv);
+                trackDiv.appendChild(borderSpan);
+
+                // Ajoute le conteneur principal à l'élément parent passé en paramètre
+                parentElement.appendChild(trackDiv);
+            }
+
+            error() {
+                this.card.classList.toggle('error');
+                setTimeout(() => {
+                    this.card.classList.toggle('error');
+                }, 1000);
             }
         }
 
         var modalactive = 0;
 
         const togglemodal = () => {
-            if(modalactive) {
+            if (modalactive) {
                 document.body.setAttribute('modal', 'off');
                 setTimeout(() => {
                     document.getElementById('modal-container').style.display = 'none';
@@ -652,6 +1055,19 @@
                 modalactive = 1;
             }
         }
+
+        const formatduration = (durationInSeconds) => {
+            const hours = Math.floor(durationInSeconds / 3600);
+            const minutes = Math.floor((durationInSeconds % 3600) / 60);
+            const seconds = durationInSeconds % 60;
+
+            const formattedHours = hours.toString().padStart(2, '0');
+            const formattedMinutes = minutes.toString().padStart(2, '0');
+            const formattedSeconds = seconds.toString().padStart(2, '0');
+
+            return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+        }
     </script>
 </body>
+
 </html>
