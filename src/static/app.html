@@ -468,10 +468,16 @@
             display: grid;
             grid-template-columns: 40px 1fr;
             overflow: hidden;
-            background: #E8D4ED;
             border-radius: 5px;
             position: relative;
             margin: 5px 0;
+        }
+
+        .deezer.track {
+            background: #E8D4ED;
+        }
+        .spotify.track {
+            background: #91ffcc;
         }
 
         .track-picture {
@@ -492,7 +498,13 @@
             right: 0;
             width: 40px;
             height: 100%;
+        }
+
+        .deezer .text-border {
             background: linear-gradient(90deg, #E8D4ED00, #E8D4EDFF 30px, #E8D4EDFF);
+        }
+        .spotify .text-border {
+            background: linear-gradient(90deg, #91ffcc00, #91ffccFF 30px, #91ffccFF);
         }
 
         .text-title {
@@ -783,10 +795,10 @@
                     </div>
                 </div>
                 <div id="playlist-tracks">
-                    <div id="added-track-container" style="display:none;">
+                    <div id="added-track-container" style="display: none;">
                         <div class="playlist-title">Added tracks <span class="line"></span></div>
                         <div class="playlist-tracks-group">
-                            <div class="track">
+                            <div class="track spotify">
                                 <img src="https://picsum.photos/40" class="track-picture">
                                 <div class="track-text">
                                     <span class="text-title">Where Is My Mind</span><span>&nbsp;-&nbsp;</span><span>The
@@ -992,7 +1004,7 @@
             createTrackElement(parentElement, track) {
                 // Crée le conteneur principal <div class="track">
                 const trackDiv = document.createElement("div");
-                trackDiv.className = "track";
+                trackDiv.className = `track ${this.type}`;
 
                 // Crée l'image <img src="https://picsum.photos/40" class="track-picture">
                 const img = document.createElement("img");
