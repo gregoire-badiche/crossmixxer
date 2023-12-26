@@ -130,7 +130,7 @@ class DeezerConnection {
                 }
                 return {
                     title: res.results.DATA.TITLE,
-                    picture: `https://e-cdns-images.dzcdn.net/images/cover/${res.results.DATA.PLAYLIST_PICTURE}/264x264-000000-80-0-0.jpg`,
+                    picture: `https://e-cdns-images.dzcdn.net/images/playlist/${res.results.DATA.PLAYLIST_PICTURE}/264x264-000000-80-0-0.jpg`,
                     owner: res.results.DATA.PARENT_USERNAME,
                     size: res.results.DATA.NB_SONG,
                     duration: res.results.DATA.DURATION,

@@ -16,12 +16,6 @@ app.use(express.static(__dirname + '/static/public'));
 
 app
     .get('/', (req, res) => {
-        res.sendFile(__dirname + '/static/index.html');
-    })
-    // .get('/app/', (req, res) => {
-    //     res.redirect('/app')
-    // })
-    .get('/app', (req, res) => {
         res.sendFile(__dirname + '/static/app.html');
     })
     .get('/dz/playlist/:token', (req, res) => {
@@ -31,6 +25,6 @@ app
 waiter.onready = () => {
     console.log('All services authenticated!');
     app.listen(port, () => {
-      console.log(`Server is running on http://localhost:${port}`);
+        console.log(`Server is running on http://localhost:${port}`);
     });
 }
